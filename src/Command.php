@@ -7,10 +7,16 @@ abstract class Command
 
   protected $errors = '';
   protected $arguments = array();
+  protected $settings;
 
   protected function getAllowedArguments()
   {
     return array();
+  }
+
+  public function __construct($allSettings)
+  {
+    $this->setSettings($allSettings);
   }
 
   /**
@@ -49,6 +55,18 @@ abstract class Command
     $this->errors .= $this->validateArguments($this->arguments);
 
     return $this->errors;
+  }
+
+
+  /**
+   * Set the default settings.
+   *
+   * We provide a way to rename/filter the settings to
+   * only the relevant one.
+   */
+  private function setSettings($allSettings)
+  {
+    $this->settings = $allSettings;
   }
 
 }

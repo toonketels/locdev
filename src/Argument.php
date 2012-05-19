@@ -5,6 +5,7 @@ class Argument
   protected $name;
   protected $description;
   protected $validationFunc;
+  public $value;
 
   public function __construct($name, $description, $validation)
   {
@@ -15,7 +16,9 @@ class Argument
 
   public function validate($value)
   {
-    return call_user_func($this->validationFunc, $value);
+    $error = call_user_func($this->validationFunc, $value);
+    if(empty($error)) $this->value = $value;
+    return $error;
   }
 
   public function getName()

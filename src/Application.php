@@ -165,7 +165,7 @@ class Application
   {
     if(isset($this->commands[$this->currentCommand])) {
       // Create a command object
-      $currentCommand = new $this->commands[$this->currentCommand]();
+      $currentCommand = new $this->commands[$this->currentCommand]($this->settings);
       $this->error .=  $currentCommand->setArguments($this->arguments);
       $this->printErrors();
       $currentCommand->execute();
@@ -183,22 +183,5 @@ class Application
     exit(0);
   }
 
-
-  public function getSettings($settingsAskedFor)
-  {
-    $settings = array();
-    foreach ($settingsAskedFor as $name) {
-      if(isset($this->settings[$name])) $settings[$name] = $this->settings[$name];
-    }
-    return $settings;
-  }
-
-  /**
-   * If setting exist, returns a key value pair.
-   */
-  public function getSetting($settingAskedFor)
-  {
-    return $this->getSettingsAskedFor(array($settingAskedFor));
-  }
 
 }

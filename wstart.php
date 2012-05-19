@@ -9,8 +9,8 @@ require(__DIR__ . '/cmd/HelpCommand.php');
 
 $app = new Application("wstart.php");
 
-$app->setCommand('help', new HelpCommand());
-$app->setCommand('create', new CreateCommand());
+$app->setCommand('help', 'HelpCommand');
+$app->setCommand('create', 'CreateCommand');
 
 $app->shutDown();
 
