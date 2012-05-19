@@ -15,6 +15,9 @@ class CreateCommand extends Command
 {
   protected $projectMachineName;
   private $websiteDirectory;
+  private $name;
+  private $domain;
+  private $websiteRoot;
 
   protected function validateArguments($arguments)
   {
@@ -77,6 +80,7 @@ class CreateCommand extends Command
     $this->createWebsiteDirectory();
     $this->createWebsiteRoot();
     $this->createDatabase();
+    $this->createDrushAlias();
   }
 
   /**
@@ -89,6 +93,40 @@ class CreateCommand extends Command
     $this->websiteDirectory = $dir . '/' . $project;
     mkdir($this->websiteDirectory);
     // @todo: add exeption handling/error reporting for when goes wrong.
+  }
+
+
+  private function createDrushAlias()
+  {
+    $alias = $this->getName();
+    $domain = $this->getDomain();
+    $websiteRoot = $this->websiteRoot;
+
+    $fh = fopen($this->settings['drush_alias_path'], 'a');
+
+    $lines = array(
+      '$aliases["'.$alias.'"]["uri"] = "'.$domain.'"'."\n",
+      '$aliases["'.$alias.'"]["root"] = "'.$websiteRoot.'"'."\n",
+      "\n",
+    );
+    foreach($lines as $line) {
+      fputs($fh, $line);
+    }
+    fclose($fh);
+    // @todo: errors and stuff...
+  }
+
+
+  private function getName()
+  {
+    if(isset($this->name)) {
+      return $this->name;
+    }
+
+    $machine_name = $this->getProjectMachineName();
+    $parts = explode('_', $machine_name);
+    array_pop($parts);
+    return $this->name = implode($parts, '_');
   }
 
 
@@ -114,6 +152,7 @@ class CreateCommand extends Command
       mkdir($dir);
       $currentDir = $dir;
     }
+    $this->websiteRoot = $currentDir;
     // @todo: add error handling/reporting
   }
 
@@ -129,7 +168,7 @@ class CreateCommand extends Command
       return $this->projectMachineName;
     }
 
-    $domain = $this->arguments[1]->value;
+    $domain = $this->getDomain();;
     $domain = strtolower($domain);
     $domain = str_replace('-', '_', $domain);
     $parts = explode('.', $domain);
@@ -138,6 +177,17 @@ class CreateCommand extends Command
     array_push($parts, $topDomain);
     return implode($parts, '_');
   }
+
+
+  private function getDomain()
+  {
+    if(isset($this->domain)) {
+      return $this->domain;
+    }
+
+    return $this->domain =  $this->arguments[1]->value;
+  }
+
 
 
 
