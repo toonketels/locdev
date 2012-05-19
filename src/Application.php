@@ -7,12 +7,13 @@ class Application
   protected $error = "";
   protected $commands = array();
   protected $currentCommand;
+  private $settings;
 
   public function __construct($name)
   {
     $this->name = $name;
+    $this->loadDefaultSettings();
     $this->init();
-    $this->printErrors();
   }
 
   public function init()
@@ -29,6 +30,18 @@ class Application
     $arguments = $argv;
     array_shift($arguments);
     $this->parseArguments($arguments);
+
+    // Print errors if there at end of initialization.
+    $this->printErrors();
+  }
+
+
+  /**
+   * Loads default settings from a settings.ini file.
+   */
+  private function loadDefaultSettings()
+  {
+    $this->settings = parse_ini_file('settings.ini');
   }
 
 
@@ -92,9 +105,9 @@ class Application
   }
 
 
-  public function setCommand($name, Command $command)
+  public function setCommand($name, $commandClass)
   {
-    $this->commands[$name] = $command;
+    $this->commands[$name] = $commandClass;
   }
 
 
@@ -151,14 +164,16 @@ class Application
   public function shutDown()
   {
     if(isset($this->commands[$this->currentCommand])) {
-      $currentCommand = $this->commands[$this->currentCommand];
+      // Create a command object
+      $currentCommand = new $this->commands[$this->currentCommand]();
       $this->error .=  $currentCommand->setArguments($this->arguments);
       $this->printErrors();
       $currentCommand->execute();
     } else {
       $this->error .= "Command $this->currentCommand does not exist. Type help for more info about commands.";
-      $this->printErrors();
     }
+
+    $this->terminate();
   }
 
 
@@ -166,6 +181,24 @@ class Application
   {
     $this->printErrors();
     exit(0);
+  }
+
+
+  public function getSettings($settingsAskedFor)
+  {
+    $settings = array();
+    foreach ($settingsAskedFor as $name) {
+      if(isset($this->settings[$name])) $settings[$name] = $this->settings[$name];
+    }
+    return $settings;
+  }
+
+  /**
+   * If setting exist, returns a key value pair.
+   */
+  public function getSetting($settingAskedFor)
+  {
+    return $this->getSettingsAskedFor(array($settingAskedFor));
   }
 
 }

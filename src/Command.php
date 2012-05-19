@@ -14,6 +14,16 @@ abstract class Command
   }
 
   /**
+   * Ask a question to user and return response.
+   */
+  protected function ask($question)
+  {
+    $fh = fopen("php://stdin", 'r');
+    print($question . "\n");
+    return fgets($fh);
+  }
+
+  /**
    * Will set and validate the arguments.
    */
   public function setArguments($argumentsPassed)
