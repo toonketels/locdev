@@ -123,12 +123,12 @@ class Application
   }
 
 
-  public function shutDown()
+  public function run()
   {
     if(isset($this->commands[$this->currentCommand])) {
       // Create a command object
-      $currentCommand = new $this->commands[$this->currentCommand]($this->settings);
-      $this->error .=  $currentCommand->setArguments($this->arguments);
+      $currentCommand = new $this->commands[$this->currentCommand]();
+      $this->error .=  $currentCommand->setValues($this->arguments);
       $this->printErrors();
       $currentCommand->execute();
     } else {

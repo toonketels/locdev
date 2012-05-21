@@ -19,6 +19,7 @@ class CreateCommand extends Command
   private $domain;
   private $websiteRoot;
 
+
   protected function validateArguments($arguments)
   {
     // We need at least a domain name...
@@ -42,7 +43,7 @@ class CreateCommand extends Command
   {
     return array(
       1 => new Argument(
-        "domain",
+        "Domain",
         "The desired domain of the new website",
         function($argValue) {
           if(!is_string($argValue) ||
@@ -64,7 +65,7 @@ class CreateCommand extends Command
       ),
       'root' => new Argument(
         "Website root",
-        "The website root relative to the Parent directory, which defaults to $this->settings['webiste_root_path']",
+        "The website root relative to the Project directory.",
         function($argValue) {
           return '';
         }
@@ -89,7 +90,7 @@ class CreateCommand extends Command
   protected function createWebSiteDirectory()
   {
     $project = $this->getProjectMachineName();
-    $dir = isset($this->arguments['project']->value) ? $this->arguments['project']->value : $this->settings['project_path'];
+    $dir = $this->settings->getValueFor('Project directory');
     $this->websiteDirectory = $dir . '/' . $project;
     mkdir($this->websiteDirectory);
     // @todo: add exeption handling/error reporting for when goes wrong.
@@ -102,7 +103,7 @@ class CreateCommand extends Command
     $domain = $this->getDomain();
     $websiteRoot = $this->websiteRoot;
 
-    $fh = fopen($this->settings['drush_alias_path'], 'a');
+    $fh = fopen($this->settings->getValueFor('drush_alias_path'), 'a');
 
     $lines = array(
       '$aliases["'.$alias.'"]["uri"] = "'.$domain.'"'."\n",
@@ -132,7 +133,7 @@ class CreateCommand extends Command
 
   private function createDatabase()
   {
-    $conn = mysql_connect("localhost", $this->settings['mysql_user'], $this->settings['mysql_pssw']);
+    $conn = mysql_connect("localhost", $this->settings->getValueFor('mysql_user'), $this->settings->getValueFor('mysql_pssw'));
     mysql_query("CREATE DATABASE " . $this->getProjectMachineName(), $conn);
     mysql_close($conn);
     // @todo: error handling => mysql server might not run...
@@ -144,7 +145,7 @@ class CreateCommand extends Command
    */
   protected function createWebsiteRoot()
   {
-    $root = isset($this->arguments['root']->value) ? $this->arguments['root']->value : $this->settings['website_root_path'];
+    $root = $this->settings->getValueFor('Website root');
     $directories = explode('/', $root);
     $currentDir = $this->websiteDirectory;
     foreach($directories as $dirName) {
@@ -185,7 +186,7 @@ class CreateCommand extends Command
       return $this->domain;
     }
 
-    return $this->domain =  $this->arguments[1]->value;
+    return $this->domain =  $this->settings->getValueFor('Domain');
   }
 
 

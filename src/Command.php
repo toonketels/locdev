@@ -14,11 +14,7 @@ abstract class Command
     return array();
   }
 
-  public function __construct($allSettings)
-  {
-    $this->setSettings($allSettings);
-  }
-
+ 
   /**
    * Ask a question to user and return response.
    */
@@ -32,7 +28,7 @@ abstract class Command
   /**
    * Will set and validate the arguments.
    */
-  public function setArguments($argumentsPassed)
+  final public function setValues($argumentsPassed)
   {
     $allowedArguments = $this->getAllowedArguments();
 
@@ -53,6 +49,8 @@ abstract class Command
 
     // Perform additional custom validation.
     $this->errors .= $this->validateArguments($this->arguments);
+    
+    $this->settings = new Settings($this->arguments);
 
     return $this->errors;
   }
@@ -67,6 +65,12 @@ abstract class Command
   private function setSettings($allSettings)
   {
     $this->settings = $allSettings;
+  }
+  
+  
+  private function getValue($name)
+  {
+    return isset($this->arguments[$name]) ? $this->arguments[$name] : $this->settings[$name];
   }
 
 }
