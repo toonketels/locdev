@@ -111,44 +111,6 @@ class Application
   }
 
 
-  public function map() {
-
-    $error = '';
-    $arguments;
-
-    // Check all required arguments are given
-    $missing_required_arguments = $this->mapper->get_missing_arguments(array_keys($this->arguments));
-    foreach ($missing_required_arguments as $arg_key => $arg_object) {
-      $error .= 'Argument $arg_key is missing';
-    }
-
-    foreach ($this->arguments as $arg_key => $arg_value) {
-
-      // check whether argument is valid
-      if(!$this->mapper->is_valid_argument($arg_key)) {
-
-        $error .= "$arg_key $arg_value is not a valid argument";
-      } else {
-
-        // Instanciate object
-        $arg_class = $this->mapper->get_argument_class($arg_key);
-        $argument = new $arg_class($arg_value);
-        // Validate argument
-        $pos_error = $argument->validate();
-        if($pos_error) {
-          $error .= $pos_error;
-        } else {
-          $arguments[] = $argument;
-        }
-
-      }
-    }
-    $this->error = $error;
-    return $arguments;
-  }
-
-
-
   /**
    * Print errors and return.
    */
