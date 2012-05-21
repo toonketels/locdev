@@ -20,12 +20,6 @@ class Application
   {
     global $argc;
     global $argv;
-
-    if($argc == 1) {
-      $this->error = "Type \"$this->name help\" for help.\n";
-      $this->terminate();
-    }
-
     // parse arguments
     $arguments = $argv;
     array_shift($arguments);
@@ -41,7 +35,7 @@ class Application
    */
   private function loadDefaultSettings()
   {
-    $this->settings = parse_ini_file('settings.ini');
+    $this->settings = parse_ini_file(__DIR__ . '/../settings.ini');
   }
 
 
@@ -98,8 +92,14 @@ class Application
     }
 
     // extract current command
-    $this->currentCommand = $args[0];
-    unset($args[0]);
+    if(isset($args[0])) {
+      $this->currentCommand = $args[0];
+      unset($args[0]);
+    } else {
+      $this->error = "Type \"$this->name help\" for help.\n";
+      $this->terminate();
+    }
+
     // set arguments
     $this->arguments = $args;
   }

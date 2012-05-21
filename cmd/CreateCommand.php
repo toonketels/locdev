@@ -126,7 +126,7 @@ class CreateCommand extends Command
     $machine_name = $this->getProjectMachineName();
     $parts = explode('_', $machine_name);
     array_pop($parts);
-    return $this->name = implode($parts, '_');
+    return $this->name = implode($parts, '-');
   }
 
 
