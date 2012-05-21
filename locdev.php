@@ -8,7 +8,7 @@ require(__DIR__ . '/cmd/CreateCommand.php');
 require(__DIR__ . '/cmd/HelpCommand.php');
 
 
-$app = new Application("wstart.php");
+$app = new Application("locdev.php");
 
 // Map commands
 $app->setCommand('help', 'HelpCommand');
